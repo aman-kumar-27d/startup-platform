@@ -10,6 +10,19 @@ datasource db {
   provider = "sqlite"
 }
 
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum Role {
   ADMIN
   EMPLOYEE
@@ -23,6 +36,27 @@ model User {
   role                 Role     @default(EMPLOYEE)
   isActive             Boolean  @default(true)
   mustChangePassword   Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedTasks Task[] @relation("TaskAssignee")
+  createdTasks  Task[] @relation("TaskCreator")
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  title        String
+  description  String
+  status       TaskStatus   @default(TODO)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?
+
+  assignedTo   User         @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  assignedToId String
+
+  createdBy    User         @relation("TaskCreator", fields: [createdById], references: [id])
+  createdById  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
