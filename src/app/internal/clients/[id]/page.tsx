@@ -11,8 +11,8 @@ import { NotesSection } from "../components/NotesSection";
 
 interface User {
     id: string;
-    name: string | null;
     email: string;
+    role: string;
 }
 
 export default function ClientDetailPage() {
@@ -91,10 +91,10 @@ export default function ClientDetailPage() {
         if (session?.user.role === "ADMIN") {
             const fetchUsers = async () => {
                 try {
-                    const response = await fetch("/api/internal/users");
+                    const response = await fetch("/api/internal/users/assignable");
                     if (response.ok) {
                         const data = await response.json();
-                        setUsers(data);
+                        setUsers(Array.isArray(data) ? data : []);
                     }
                 } catch (err) {
                     console.error("Failed to fetch users:", err);
@@ -300,7 +300,7 @@ export default function ClientDetailPage() {
                     <div className="space-y-2 text-sm">
                         <p>
                             <span className="text-gray-600">Owner:</span>{" "}
-                            {client.owner.name || client.owner.email}
+                            {client.owner ? client.owner.email : "Unassigned"}
                         </p>
                         <p>
                             <span className="text-gray-600">Created:</span>{" "}
@@ -332,6 +332,7 @@ export default function ClientDetailPage() {
                         users={users}
                         isLoading={isSaving}
                         canEditStatus={true}
+                        canEditOwner={true}
                     />
                 </div>
             )}

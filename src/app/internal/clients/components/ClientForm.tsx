@@ -5,11 +5,12 @@ import type { ClientData } from "../types";
 
 interface ClientFormProps {
     onSubmit: (data: Partial<ClientData>) => Promise<void>;
-    users: Array<{ id: string; name: string | null; email: string }>;
+    users: Array<{ id: string; email: string; role: string }>;
     initialData?: ClientData;
     isLoading?: boolean;
     readOnly?: boolean;
     canEditStatus?: boolean;
+    canEditOwner?: boolean;
 }
 
 export function ClientForm({
@@ -19,6 +20,7 @@ export function ClientForm({
     isLoading = false,
     readOnly = false,
     canEditStatus = false,
+    canEditOwner = false,
 }: ClientFormProps) {
     const [formData, setFormData] = useState({
         name: initialData?.name || "",
@@ -156,7 +158,28 @@ export function ClientForm({
                         <option value="">Select an owner</option>
                         {users.map((user) => (
                             <option key={user.id} value={user.id}>
-                                {user.name || user.email}
+                                {user.email} ({user.role})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {initialData && canEditOwner && (
+                <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                        Owner (for ADMIN to change)
+                    </label>
+                    <select
+                        name="ownerId"
+                        value={formData.ownerId}
+                        onChange={handleChange}
+                        disabled={readOnly || isLoading}
+                        className="w-full px-3 py-2 border border-gray-400 rounded-lg disabled:bg-gray-50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-900"
+                    >
+                        {users.map((user) => (
+                            <option key={user.id} value={user.id}>
+                                {user.email} ({user.role})
                             </option>
                         ))}
                     </select>

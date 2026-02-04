@@ -50,7 +50,7 @@ export async function POST(
     // Update user password and set mustChangePassword to true
     await prisma.user.update({
       where: { id },
-      data: { 
+      data: {
         password: hashedPassword,
         mustChangePassword: true,
       },

@@ -13,8 +13,8 @@ interface FilterOptions {
 
 interface User {
     id: string;
-    name: string | null;
     email: string;
+    role: string;
 }
 
 export default function ClientsPage() {
@@ -102,7 +102,7 @@ export default function ClientsPage() {
         if (session?.user.role === "ADMIN") {
             const fetchUsers = async () => {
                 try {
-                    const response = await fetch("/api/internal/users");
+                    const response = await fetch("/api/internal/users/assignable");
                     if (response.ok) {
                         const data = await response.json();
                         setUsers(Array.isArray(data) ? data : []);
@@ -119,14 +119,27 @@ export default function ClientsPage() {
     const handleCreateClient = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...createFormData,
+                name: createFormData.name.trim(),
+                companyName: createFormData.companyName.trim(),
+                email: createFormData.email.trim().toLowerCase(),
+                phone: createFormData.phone.trim(),
+                website: createFormData.website.trim(),
+            };
             const response = await fetch("/api/internal/clients", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(createFormData),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
-                throw new Error("Failed to create client");
+                const errorBody = await response
+                    .json()
+                    .catch(() => null as { error?: string } | null);
+                throw new Error(
+                    errorBody?.error || "Failed to create client"
+                );
             }
 
             setShowCreateForm(false);
@@ -270,7 +283,7 @@ export default function ClientsPage() {
                                     <option value="">Select an owner</option>
                                     {(users || []).map((user) => (
                                         <option key={user.id} value={user.id}>
-                                            {user.name || user.email}
+                                            {user.email} ({user.role})
                                         </option>
                                     ))}
                                 </select>
@@ -400,7 +413,7 @@ export default function ClientsPage() {
                                 <option value="">All Owners</option>
                                 {(users || []).map((user) => (
                                     <option key={user.id} value={user.id}>
-                                        {user.name || user.email}
+                                        {user.email} ({user.role})
                                     </option>
                                 ))}
                             </select>

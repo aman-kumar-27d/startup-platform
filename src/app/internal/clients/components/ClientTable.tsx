@@ -35,7 +35,7 @@ export function ClientTable({
                         <th className="px-4 py-3 text-left font-semibold text-gray-900">Company</th>
                         <th className="px-4 py-3 text-left font-semibold text-gray-900">Status</th>
                         <th className="px-4 py-3 text-left font-semibold text-gray-900">Weightage</th>
-                        <th className="px-4 py-3 text-left font-semibold text-gray-900 text-gray-900">Owner</th>
+                        <th className="px-4 py-3 text-left font-semibold text-gray-900">Owner</th>
                         {userRole === "ADMIN" && (
                             <th className="px-4 py-3 text-left font-semibold text-gray-900">Risk</th>
                         )}
@@ -67,7 +67,7 @@ export function ClientTable({
                                 </span>
                             </td>
                             <td className="px-4 py-3 text-gray-800">
-                                {client.owner.name || client.owner.email}
+                                {client.owner ? client.owner.email : "Unassigned"}
                             </td>
                             {userRole === "ADMIN" && (
                                 <td className="px-4 py-3">
