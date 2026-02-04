@@ -24,6 +24,17 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  const isSetupRoute = req.nextUrl.pathname.startsWith("/internal/setup");
+
+  // Allow the one-time setup page to be reached when explicitly enabled.
+  if (
+    isSetupRoute &&
+    process.env.ALLOW_ADMIN_SETUP &&
+    process.env.ALLOW_ADMIN_SETUP.toLowerCase() === "true"
+  ) {
+    return NextResponse.next();
+  }
+
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const isLoginRoute = req.nextUrl.pathname.startsWith(LOGIN_ROUTE);
 
