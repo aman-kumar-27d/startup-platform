@@ -9,6 +9,53 @@ interface Params {
     id: string;
 }
 
+export async function GET(
+    req: NextRequest,
+    { params }: { params: Promise<Params> }
+) {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+        const { id } = await params;
+
+        const client = await prisma.client.findUnique({
+            where: { id },
+            include: {
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+
+        if (!client) {
+            return NextResponse.json({ error: "Client not found" }, { status: 404 });
+        }
+
+        if (
+            session.user.role === "EMPLOYEE" &&
+            client.ownerId !== session.user.id
+        ) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
+        return NextResponse.json(client);
+    } catch (error) {
+        console.error("Error fetching client:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch client" },
+            { status: 500 }
+        );
+    }
+}
+
 export async function PATCH(
     req: NextRequest,
     { params }: { params: Promise<Params> }
@@ -226,14 +273,7 @@ export async function POST(
     try {
         const { id } = await params;
         const body = await req.json();
-        const { archive } = body;
-
-        if (archive !== true) {
-            return NextResponse.json(
-                { error: "Invalid request" },
-                { status: 400 }
-            );
-        }
+        const { archive, unarchive } = body;
 
         const client = await prisma.client.findUnique({
             where: { id },
@@ -243,41 +283,80 @@ export async function POST(
             return NextResponse.json({ error: "Client not found" }, { status: 404 });
         }
 
-        if (client.isArchived) {
+        if (archive === true) {
+            if (client.isArchived) {
+                return NextResponse.json(
+                    { error: "Client is already archived" },
+                    { status: 400 }
+                );
+            }
+
+            // Archive client
+            const archivedClient = await prisma.client.update({
+                where: { id },
+                data: { isArchived: true },
+                include: {
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            });
+
+            // Log history
+            await logClientHistory(
+                id,
+                session.user.id,
+                "ARCHIVED",
+                "Client archived"
+            );
+
+            return NextResponse.json(archivedClient);
+        } else if (unarchive === true) {
+            if (!client.isArchived) {
+                return NextResponse.json(
+                    { error: "Client is not archived" },
+                    { status: 400 }
+                );
+            }
+
+            // Unarchive client
+            const unarchivedClient = await prisma.client.update({
+                where: { id },
+                data: { isArchived: false },
+                include: {
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+            });
+
+            // Log history
+            await logClientHistory(
+                id,
+                session.user.id,
+                "ARCHIVED",
+                "Client unarchived"
+            );
+
+            return NextResponse.json(unarchivedClient);
+        } else {
             return NextResponse.json(
-                { error: "Client is already archived" },
+                { error: "Invalid request - specify either archive or unarchive" },
                 { status: 400 }
             );
         }
-
-        // Archive client
-        const archivedClient = await prisma.client.update({
-            where: { id },
-            data: { isArchived: true },
-            include: {
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                    },
-                },
-            },
-        });
-
-        // Log history
-        await logClientHistory(
-            id,
-            session.user.id,
-            "ARCHIVED",
-            "Client archived"
-        );
-
-        return NextResponse.json(archivedClient);
     } catch (error) {
-        console.error("Error archiving client:", error);
+        console.error("Error archiving/unarchiving client:", error);
         return NextResponse.json(
-            { error: "Failed to archive client" },
+            { error: "Failed to archive/unarchive client" },
             { status: 500 }
         );
     }

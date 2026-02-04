@@ -8,6 +8,7 @@ import type { ClientData, ClientHistoryEntry } from "../types";
 import { ClientForm } from "../components/ClientForm";
 import { HistoryTimeline } from "../components/HistoryTimeline";
 import { NotesSection } from "../components/NotesSection";
+import { RiskToggle } from "../components/RiskToggle";
 
 interface User {
     id: string;
@@ -28,6 +29,7 @@ export default function ClientDetailPage() {
     const [historyLoading, setHistoryLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
+    const [showUnarchiveConfirm, setShowUnarchiveConfirm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
 
     // Fetch client data
@@ -38,7 +40,18 @@ export default function ClientDetailPage() {
             setIsLoading(true);
             try {
                 const response = await fetch(`/api/internal/clients/${id}`);
-                if (!response.ok) throw new Error("Failed to fetch client");
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error("Client not found");
+                    }
+                    if (response.status === 403) {
+                        throw new Error("You don't have access to this client");
+                    }
+                    const errorBody = await response.json().catch(() => null);
+                    throw new Error(
+                        errorBody?.error || "Failed to fetch client"
+                    );
+                }
 
                 const data = await response.json();
 
@@ -53,7 +66,9 @@ export default function ClientDetailPage() {
 
                 setClient(data);
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Failed to fetch client");
+                setError(
+                    err instanceof Error ? err.message : "Failed to fetch client"
+                );
             } finally {
                 setIsLoading(false);
             }
@@ -162,6 +177,65 @@ export default function ClientDetailPage() {
         }
     };
 
+    const handleUnarchive = async () => {
+        setIsSaving(true);
+        try {
+            const response = await fetch(`/api/internal/clients/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ unarchive: true }),
+            });
+
+            if (!response.ok) throw new Error("Failed to unarchive client");
+
+            const updatedClient = await response.json();
+            setClient(updatedClient);
+            setShowUnarchiveConfirm(false);
+
+            // Refetch history
+            const historyResponse = await fetch(
+                `/api/internal/clients/${id}/history`
+            );
+            if (historyResponse.ok) {
+                const historyData = await historyResponse.json();
+                setHistory(historyData);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to unarchive client");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleToggleRisk = async (isHighRisk: boolean) => {
+        try {
+            const response = await fetch(`/api/internal/clients/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isHighRisk }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to update risk status");
+            }
+
+            const updatedClient = await response.json();
+            setClient(updatedClient);
+
+            // Refetch history
+            const historyResponse = await fetch(
+                `/api/internal/clients/${id}/history`
+            );
+            if (historyResponse.ok) {
+                const historyData = await historyResponse.json();
+                setHistory(historyData);
+            }
+        } catch (err) {
+            throw err;
+        }
+    };
+
     if (status === "loading" || isLoading) {
         return (
             <div className="flex justify-center items-center h-96">
@@ -191,8 +265,10 @@ export default function ClientDetailPage() {
                     >
                         ← Back to Clients
                     </Link>
-                    <h1 className="text-3xl font-bold mt-2">{client.name}</h1>
-                    <p className="text-gray-600">{client.companyName}</p>
+                    <h1 className="text-3xl font-bold mt-2 text-gray-900">
+                        {client.name}
+                    </h1>
+                    <p className="text-gray-700">{client.companyName}</p>
                 </div>
                 <div className="flex gap-2">
                     {session?.user.role === "ADMIN" && (
@@ -203,12 +279,21 @@ export default function ClientDetailPage() {
                             >
                                 {showEditForm ? "Cancel" : "Edit"}
                             </button>
-                            <button
-                                onClick={() => setShowArchiveConfirm(true)}
-                                className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-                            >
-                                Archive
-                            </button>
+                            {!client.isArchived ? (
+                                <button
+                                    onClick={() => setShowArchiveConfirm(true)}
+                                    className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+                                >
+                                    Archive
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setShowUnarchiveConfirm(true)}
+                                    className="px-4 py-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
+                                >
+                                    Unarchive
+                                </button>
+                            )}
                         </>
                     )}
                 </div>
@@ -222,8 +307,8 @@ export default function ClientDetailPage() {
 
             {/* Client Info Cards */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-lg border p-4">
-                    <h3 className="font-semibold text-gray-700 mb-3">Contact Info</h3>
+                <div className="bg-white rounded-lg border p-4 text-gray-900">
+                    <h3 className="font-semibold text-gray-900 mb-3">Contact Info</h3>
                     <div className="space-y-2 text-sm">
                         <p>
                             <span className="text-gray-600">Email:</span> {client.email}
@@ -249,33 +334,40 @@ export default function ClientDetailPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg border p-4">
-                    <h3 className="font-semibold text-gray-700 mb-3">
+                <div className="bg-white rounded-lg border p-4 text-gray-900">
+                    <h3 className="font-semibold text-gray-900 mb-3">
                         Relationship Details
                     </h3>
-                    <div className="space-y-2 text-sm">
-                        <p>
-                            <span className="text-gray-600">Status:</span>{" "}
-                            {client.lifecycleStatus}
-                        </p>
-                        <p>
-                            <span className="text-gray-600">Weightage:</span>{" "}
-                            {client.weightage}
-                        </p>
-                        <p>
-                            <span className="text-gray-600">Relationship Level:</span>{" "}
-                            {client.relationshipLevel}
-                        </p>
-                        {client.isHighRisk && (
-                            <p className="text-red-600 font-medium">
-                                ⚠️ Marked as High Risk
+                    <div className="space-y-3">
+                        <div className="space-y-2 text-sm">
+                            <p>
+                                <span className="text-gray-600">Status:</span>{" "}
+                                {client.lifecycleStatus}
                             </p>
+                            <p>
+                                <span className="text-gray-600">Weightage:</span>{" "}
+                                {client.weightage}
+                            </p>
+                            <p>
+                                <span className="text-gray-600">Relationship Level:</span>{" "}
+                                {client.relationshipLevel}
+                            </p>
+                        </div>
+                        {session?.user.role === "ADMIN" && (
+                            <div className="pt-3 border-t">
+                                <RiskToggle
+                                    clientId={client.id}
+                                    isHighRisk={client.isHighRisk}
+                                    onToggle={handleToggleRisk}
+                                    isLoading={isSaving}
+                                />
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg border p-4">
-                    <h3 className="font-semibold text-gray-700 mb-3">Lead Metrics</h3>
+                <div className="bg-white rounded-lg border p-4 text-gray-900">
+                    <h3 className="font-semibold text-gray-900 mb-3">Lead Metrics</h3>
                     <div className="space-y-2 text-sm">
                         <p>
                             <span className="text-gray-600">Source:</span> {client.source}
@@ -295,8 +387,8 @@ export default function ClientDetailPage() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg border p-4">
-                    <h3 className="font-semibold text-gray-700 mb-3">Assignment</h3>
+                <div className="bg-white rounded-lg border p-4 text-gray-900">
+                    <h3 className="font-semibold text-gray-900 mb-3">Assignment</h3>
                     <div className="space-y-2 text-sm">
                         <p>
                             <span className="text-gray-600">Owner:</span>{" "}
@@ -325,7 +417,7 @@ export default function ClientDetailPage() {
             {/* Edit Form */}
             {showEditForm && session?.user.role === "ADMIN" && (
                 <div className="bg-white rounded-lg border p-6">
-                    <h2 className="text-xl font-semibold mb-4">Edit Client</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Edit Client</h2>
                     <ClientForm
                         initialData={client}
                         onSubmit={handleUpdateClient}
@@ -339,7 +431,9 @@ export default function ClientDetailPage() {
 
             {/* History Timeline */}
             <div className="bg-white rounded-lg border p-6">
-                <h2 className="text-xl font-semibold mb-4">Activity History</h2>
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">
+                    Activity History
+                </h2>
                 <HistoryTimeline history={history} isLoading={historyLoading} />
             </div>
 
@@ -347,7 +441,9 @@ export default function ClientDetailPage() {
             {showArchiveConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-lg font-semibold mb-4">Archive Client?</h2>
+                        <h2 className="text-lg font-semibold mb-4 text-gray-900">
+                            Archive Client?
+                        </h2>
                         <p className="text-gray-600 mb-6">
                             Are you sure you want to archive {client.name}? This action can be
                             reversed.
@@ -362,6 +458,37 @@ export default function ClientDetailPage() {
                             </button>
                             <button
                                 onClick={() => setShowArchiveConfirm(false)}
+                                disabled={isSaving}
+                                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Unarchive Confirmation */}
+            {showUnarchiveConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-md w-full p-6">
+                        <h2 className="text-lg font-semibold mb-4 text-gray-900">
+                            Unarchive Client?
+                        </h2>
+                        <p className="text-gray-600 mb-6">
+                            Are you sure you want to unarchive {client.name}? This will move it
+                            back to the active clients list.
+                        </p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleUnarchive}
+                                disabled={isSaving}
+                                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                            >
+                                {isSaving ? "Unarchiving..." : "Unarchive"}
+                            </button>
+                            <button
+                                onClick={() => setShowUnarchiveConfirm(false)}
                                 disabled={isSaving}
                                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                             >

@@ -186,6 +186,20 @@ export function ClientForm({
                 </div>
             )}
 
+            {initialData && !canEditOwner && (
+                <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                        Owner
+                    </label>
+                    <input
+                        type="text"
+                        value={initialData.owner?.email || "Unassigned"}
+                        disabled={true}
+                        className="w-full px-3 py-2 border border-gray-400 rounded-lg bg-gray-50 text-gray-900"
+                    />
+                </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-1">
@@ -248,7 +262,7 @@ export function ClientForm({
                         name="source"
                         value={formData.source}
                         onChange={handleChange}
-                        disabled={readOnly || isLoading || !canEditStatus}
+                        disabled={readOnly || isLoading}
                         className="w-full px-3 py-2 border border-gray-400 rounded-lg disabled:bg-gray-50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-900"
                     >
                         <option value="Referral">Referral</option>

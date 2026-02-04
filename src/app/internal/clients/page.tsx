@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import type { ClientData } from "./types";
@@ -18,6 +19,7 @@ interface User {
 }
 
 export default function ClientsPage() {
+    const router = useRouter();
     const { data: session, status } = useSession();
     const [clients, setClients] = useState<ClientData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -119,11 +121,22 @@ export default function ClientsPage() {
     const handleCreateClient = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // Client-side email validation
+            const emailToCheck = createFormData.email.trim().toLowerCase();
+            const checkResponse = await fetch(
+                `/api/internal/clients/check-email?email=${encodeURIComponent(emailToCheck)}`
+            );
+
+            if (checkResponse.status === 409) {
+                setError("Email already in use. Please use a different email.");
+                return;
+            }
+
             const payload = {
                 ...createFormData,
                 name: createFormData.name.trim(),
                 companyName: createFormData.companyName.trim(),
-                email: createFormData.email.trim().toLowerCase(),
+                email: emailToCheck,
                 phone: createFormData.phone.trim(),
                 website: createFormData.website.trim(),
             };
@@ -471,7 +484,10 @@ export default function ClientsPage() {
                         </div>
                         <div className="mt-4">
                             <button
-                                onClick={() => setSelectedClient(null)}
+                                onClick={() => {
+                                    router.push(`/internal/clients/${selectedClient.id}`);
+                                    setSelectedClient(null);
+                                }}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >
                                 View Details
