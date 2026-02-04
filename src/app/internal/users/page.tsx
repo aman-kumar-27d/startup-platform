@@ -21,6 +21,9 @@ export default function UsersPage() {
 
   const currentUserId = session?.user?.id;
   const isAdmin = session?.user?.role === "ADMIN";
+  const activeAdminCount = users.filter(
+    (u) => u.role === "ADMIN" && u.isActive
+  ).length;
 
   useEffect(() => {
     if (status === "unauthenticated" || !isAdmin) {
@@ -129,11 +132,10 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-3 text-sm text-slate-900">
                     <span
-                      className={`inline-block rounded px-2.5 py-0.5 text-xs font-medium ${
-                        user.isActive
+                      className={`inline-block rounded px-2.5 py-0.5 text-xs font-medium ${user.isActive
                           ? "bg-green-50 text-green-700"
                           : "bg-red-50 text-red-700"
-                      }`}
+                        }`}
                     >
                       {user.isActive ? "Active" : "Disabled"}
                     </span>
@@ -145,6 +147,7 @@ export default function UsersPage() {
                     <UserActions
                       user={user}
                       currentUserId={currentUserId}
+                      activeAdminCount={activeAdminCount}
                       onUserUpdated={handleUserUpdated}
                     />
                   </td>

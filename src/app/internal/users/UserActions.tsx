@@ -15,12 +15,14 @@ interface User {
 interface UserActionsProps {
   user: User;
   currentUserId?: string;
+  activeAdminCount?: number;
   onUserUpdated: () => void;
 }
 
 export function UserActions({
   user,
   currentUserId,
+  activeAdminCount = 0,
   onUserUpdated,
 }: UserActionsProps) {
   const [loading, setLoading] = useState(false);
@@ -36,6 +38,8 @@ export function UserActions({
 
   const isCurrentUser = user.id === currentUserId;
   const isAdmin = user.role === "ADMIN";
+  const isLastActiveAdmin =
+    isAdmin && user.isActive && activeAdminCount <= 1;
 
   const handleConfirmAction = async () => {
     if (!confirmAction) return;
@@ -102,11 +106,18 @@ export function UserActions({
   const canEnable = !isCurrentUser && !user.isActive;
   const canResetPassword = true;
 
-  // Determine if this is the only active admin
-  // This is a simplified check - backend does the real validation
-  const reasonDisabled = isCurrentUser
-    ? "Cannot manage your own account"
-    : null;
+  // Determine disable reasons
+  const getRoleChangeReason = (): string | null => {
+    if (isCurrentUser) return "Cannot change your own role";
+    if (isLastActiveAdmin) return "Cannot demote the last active admin";
+    return null;
+  };
+
+  const getDisableReason = (): string | null => {
+    if (isCurrentUser) return "Cannot disable your own account";
+    if (isLastActiveAdmin) return "Cannot disable the last active admin";
+    return null;
+  };
 
   return (
     <>
@@ -121,8 +132,8 @@ export function UserActions({
               });
               setShowConfirmDialog(true);
             }}
-            disabled={loading || reasonDisabled !== null}
-            title={reasonDisabled || ""}
+            disabled={loading || getRoleChangeReason() !== null}
+            title={getRoleChangeReason() || ""}
             className="rounded px-3 py-1 text-sm font-medium text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent"
           >
             {isAdmin ? "Demote" : "Promote"}
@@ -138,8 +149,8 @@ export function UserActions({
               });
               setShowConfirmDialog(true);
             }}
-            disabled={loading || reasonDisabled !== null}
-            title={reasonDisabled || ""}
+            disabled={loading || getDisableReason() !== null}
+            title={getDisableReason() || ""}
             className="rounded px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent"
           >
             Disable
