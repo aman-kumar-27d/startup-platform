@@ -1,7 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
@@ -12,6 +14,24 @@ type InternalLayoutShellProps = {
 
 export function InternalLayoutShell({ children }: InternalLayoutShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const session = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Redirect to change-password if mustChangePassword is true
+  // But allow access to change-password and API routes
+  useEffect(() => {
+    if (session.status === "authenticated") {
+      const user = session.data?.user;
+      const isChangePasswordPage = pathname === "/internal/change-password";
+      const isApiRoute = pathname.startsWith("/api");
+
+      // If user must change password and is not already on the change-password page
+      if (user?.mustChangePassword && !isChangePasswordPage && !isApiRoute) {
+        router.push("/internal/change-password");
+      }
+    }
+  }, [session.status, session.data?.user?.mustChangePassword, pathname, router]);
 
   return (
     <div className="min-h-screen bg-slate-100 lg:flex">

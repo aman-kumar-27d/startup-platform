@@ -47,10 +47,13 @@ export async function POST(
     // Hash the password
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-    // Update user password
+    // Update user password and set mustChangePassword to true
     await prisma.user.update({
       where: { id },
-      data: { password: hashedPassword },
+      data: { 
+        password: hashedPassword,
+        mustChangePassword: true,
+      },
     });
 
     // Return temporary password (only time it's shown)
