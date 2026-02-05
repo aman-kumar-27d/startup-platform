@@ -22,6 +22,8 @@ const navItems: NavItem[] = [
   { name: "Tasks", href: "/internal/tasks" },
   { name: "Activity", href: "/internal/activity", requiredRole: "ADMIN" },
   { name: "Clients", href: "/internal/clients" },
+  { name: "Content", href: "/internal/content", requiredRole: "ADMIN" },
+  { name: "Services", href: "/internal/services", requiredRole: "ADMIN" },
   { name: "Users", href: "/internal/users", requiredRole: "ADMIN" },
   { name: "Settings", href: "/internal/settings" },
 ];
@@ -37,9 +39,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-50 w-64 border-r bg-white shadow-sm transition-transform duration-200 lg:static lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      }`}
+      className={`fixed inset-y-0 left-0 z-50 w-64 border-r bg-white shadow-sm transition-transform duration-200 lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
     >
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between px-4 py-4">
@@ -71,11 +72,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
+                className={`block rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                  ? "bg-gray-900 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
                 onClick={onClose}
               >
                 {item.name}
