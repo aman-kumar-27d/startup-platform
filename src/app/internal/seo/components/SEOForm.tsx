@@ -109,6 +109,52 @@ export function SEOForm({ initialData, pageKey }: SEOFormProps) {
                 </div>
             )}
 
+            {/* Current SEO Data Display */}
+            {initialData && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3">Current SEO Data</h4>
+                    <div className="space-y-2 text-sm">
+                        <div>
+                            <span className="text-gray-600">Title:</span>
+                            <p className="text-gray-900 font-medium mt-1">{initialData.title || "—"}</p>
+                        </div>
+                        <div>
+                            <span className="text-gray-600">Description:</span>
+                            <p className="text-gray-900 font-medium mt-1">{initialData.description || "—"}</p>
+                        </div>
+                        {initialData.keywords && (
+                            <div>
+                                <span className="text-gray-600">Keywords:</span>
+                                <p className="text-gray-900 font-medium mt-1">{initialData.keywords}</p>
+                            </div>
+                        )}
+                        {initialData.ogTitle && (
+                            <div>
+                                <span className="text-gray-600">OG Title:</span>
+                                <p className="text-gray-900 font-medium mt-1">{initialData.ogTitle}</p>
+                            </div>
+                        )}
+                        {initialData.ogDescription && (
+                            <div>
+                                <span className="text-gray-600">OG Description:</span>
+                                <p className="text-gray-900 font-medium mt-1">{initialData.ogDescription}</p>
+                            </div>
+                        )}
+                        {initialData.ogImage && (
+                            <div>
+                                <span className="text-gray-600">OG Image URL:</span>
+                                <p className="text-gray-900 font-medium mt-1 break-all">{initialData.ogImage}</p>
+                            </div>
+                        )}
+                        {initialData.noIndex && (
+                            <div className="pt-2 border-t border-gray-200">
+                                <span className="text-orange-600 text-xs font-semibold">⚠️ No Index: This page is hidden from search engines</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Title */}
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
