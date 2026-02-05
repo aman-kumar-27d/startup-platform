@@ -3,7 +3,7 @@ export const fadeInUp = {
     visible: {
         opacity: 1,
         y: 0,
-        transition: { duration: 0.5, ease: [0.2, 0.8, 0.2, 1] },
+        transition: { duration: 0.5, ease: [0.2, 0.8, 0.2, 1] as any },
     },
 };
 
@@ -11,7 +11,7 @@ export const fadeIn = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] },
+        transition: { duration: 0.45, ease: [0.2, 0.8, 0.2, 1] as any },
     },
 };
 

@@ -11,11 +11,11 @@ import {
 } from "@/lib/public-content";
 import { heroGradient, sectionGradient } from "@/lib/styles/gradients";
 import { cardShadow, softGlow } from "@/lib/styles/shadows";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "Home",
-    description: "Public-facing startup platform landing page.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    return generatePageMetadata("HOME");
+}
 
 export default async function LandingPage() {
     // Fetch content blocks by their keys

@@ -11,11 +11,11 @@ import {
 } from "@/lib/public-content";
 import { sectionGradient } from "@/lib/styles/gradients";
 import { cardShadow } from "@/lib/styles/shadows";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "Work",
-    description: "Public project highlights from the startup platform.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    return generatePageMetadata("WORK");
+}
 
 export default async function WorkPage() {
     const [blocks, projects] = await Promise.all([

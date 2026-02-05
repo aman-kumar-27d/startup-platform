@@ -7,11 +7,11 @@ import {
 } from "@/lib/public-content";
 import { sectionGradient } from "@/lib/styles/gradients";
 import { cardShadow } from "@/lib/styles/shadows";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "About",
-    description: "About the startup platform team and mission.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    return generatePageMetadata("ABOUT");
+}
 
 export default async function AboutPage() {
     const contentMap = await getContentByKeys([
@@ -29,7 +29,7 @@ export default async function AboutPage() {
     const value1 = contentMap.get("ABOUT_VALUE_1");
     const value2 = contentMap.get("ABOUT_VALUE_2");
     const value3 = contentMap.get("ABOUT_VALUE_3");
-    const values = [value1, value2, value3].filter(Boolean);
+    const values = [value1, value2, value3].filter((v) => v !== undefined && v !== null);
 
     const ctaBlock = contentMap.get("ABOUT_CTA");
     const ctaTitle = ctaBlock?.title;

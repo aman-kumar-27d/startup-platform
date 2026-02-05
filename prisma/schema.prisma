@@ -209,3 +209,28 @@ model Service {
   @@index([isPublished])
   @@index([order])
 }
+
+enum PageKey {
+  HOME
+  SERVICES
+  WORK
+  ABOUT
+  CONTACT
+}
+
+model PageSEO {
+  id              String   @id @default(cuid())
+  pageKey         PageKey  @unique
+  title           String
+  description     String
+  keywords        String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  noIndex         Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([pageKey])
+}

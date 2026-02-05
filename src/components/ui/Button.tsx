@@ -51,8 +51,8 @@ export function Button({
 }: ButtonProps) {
     const classes = cx(baseStyles, sizeStyles[size], variantStyles[variant], className);
 
-    if ("href" in props) {
-        const { href, ...linkProps } = props;
+    if ("href" in props && props.href !== undefined) {
+        const { href, ...linkProps } = props as ButtonLinkProps;
         return (
             <Link href={href} className={classes} {...linkProps}>
                 {children}
@@ -61,7 +61,7 @@ export function Button({
     }
 
     return (
-        <button className={classes} {...props}>
+        <button className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
             {children}
         </button>
     );

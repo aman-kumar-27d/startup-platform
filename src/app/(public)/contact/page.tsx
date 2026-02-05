@@ -12,11 +12,11 @@ import {
 } from "@/lib/public-content";
 import { sectionGradient } from "@/lib/styles/gradients";
 import { cardShadow } from "@/lib/styles/shadows";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-    title: "Contact",
-    description: "Contact the startup platform team.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+    return generatePageMetadata("CONTACT");
+}
 
 export default async function ContactPage() {
     const blocks = await getContentBlocks();

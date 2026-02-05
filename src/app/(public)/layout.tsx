@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         default: "Startup Platform",
         template: "%s | Startup Platform",
     },
-    description: "Public-facing startup platform website.",
+    description: "A modern platform for startup management and growth.",
 };
 
 export default async function PublicLayout({
