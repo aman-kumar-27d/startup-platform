@@ -18,7 +18,6 @@ interface PageSEOData {
 interface SEOFormProps {
     initialData?: PageSEOData | null;
     pageKey: PageKey;
-    onSuccess?: () => void;
 }
 
 const PAGE_KEY_LABELS: Record<PageKey, string> = {
@@ -29,7 +28,7 @@ const PAGE_KEY_LABELS: Record<PageKey, string> = {
     CONTACT: "Contact",
 };
 
-export function SEOForm({ initialData, pageKey, onSuccess }: SEOFormProps) {
+export function SEOForm({ initialData, pageKey }: SEOFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -80,7 +79,6 @@ export function SEOForm({ initialData, pageKey, onSuccess }: SEOFormProps) {
 
             setSuccess(true);
             setTimeout(() => setSuccess(false), 3000);
-            onSuccess?.();
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred");
         } finally {

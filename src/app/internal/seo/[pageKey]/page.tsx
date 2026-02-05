@@ -41,9 +41,6 @@ export default async function SEOEditorPage({ params }: SEOPageProps) {
             <SEOForm
                 pageKey={pageKey as PageKey}
                 initialData={existingPageSEO}
-                onSuccess={() => {
-                    // Page will remain the same, form will show success message
-                }}
             />
         </div>
     );
