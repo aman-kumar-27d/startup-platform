@@ -10,8 +10,7 @@ import {
     resolveIdentifier,
     resolveText,
 } from "@/lib/public-content";
-import { sectionGradient } from "@/lib/styles/gradients";
-import { cardShadow } from "@/lib/styles/shadows";
+import { cardSectionGradient, warmGradientLight } from "@/lib/styles/gradients";
 import { generatePageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -48,20 +47,27 @@ export default async function ContactPage() {
     ]);
 
     return (
-        <div>
-            <Section className={sectionGradient}>
-                <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6">
-                    <div className="max-w-2xl">
+        <div className="bg-white">
+            {/* Hero Section */}
+            <Section className={`${warmGradientLight} py-20 sm:py-28 lg:py-32`}>
+                <div className="mx-auto max-w-6xl px-6">
+                    <div className="max-w-3xl">
                         {heroTitle ? (
-                            <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
+                            <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
                                 {heroTitle}
                             </h1>
                         ) : null}
                         {heroBody ? (
-                            <p className="mt-3 text-base text-slate-600">{heroBody}</p>
+                            <p className="mt-6 text-lg text-slate-600 leading-relaxed">{heroBody}</p>
                         ) : null}
                     </div>
-                    {contactCards.length ? (
+                </div>
+            </Section>
+
+            {/* Contact Methods Grid */}
+            {contactCards.length ? (
+                <Section className={cardSectionGradient}>
+                    <div className="mx-auto max-w-6xl px-6">
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {contactCards.map((card, index) => {
                                 const title = resolveText(card, ["title", "headline", "name"]);
@@ -76,7 +82,8 @@ export default async function ContactPage() {
                                 return (
                                     <Card
                                         key={resolveIdentifier(card) ?? `contact-${index}`}
-                                        className={cardShadow}
+                                        index={index}
+                                        floating
                                     >
                                         {title ? (
                                             <h2 className="text-lg font-semibold text-slate-900">
@@ -84,33 +91,40 @@ export default async function ContactPage() {
                                             </h2>
                                         ) : null}
                                         {body ? (
-                                            <p className="mt-2 text-sm text-slate-600">{body}</p>
+                                            <p className="mt-3 text-sm text-slate-600 leading-relaxed">{body}</p>
                                         ) : null}
                                         {href && title ? (
                                             <Link
                                                 href={href}
-                                                className="mt-4 inline-flex text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
+                                                className="mt-4 inline-flex text-sm font-medium text-orange-600 hover:text-orange-700 underline-offset-4 hover:underline"
                                             >
-                                                {title}
+                                                {title} →
                                             </Link>
                                         ) : null}
                                     </Card>
                                 );
                             })}
                         </div>
-                    ) : null}
-                    {ctaLabel && ctaHref ? (
-                        <div>
+                    </div>
+                </Section>
+            ) : null}
+
+            {/* CTA Section */}
+            {ctaLabel && ctaHref ? (
+                <Section className={`border-t border-slate-100 ${warmGradientLight}`}>
+                    <div className="mx-auto max-w-6xl px-6">
+                        <div className="max-w-3xl">
+                            <p className="text-lg text-slate-600 mb-6">Ready to get started?</p>
                             <Link
                                 href={ctaHref}
-                                className="inline-flex items-center text-sm font-semibold text-slate-900 underline-offset-4 hover:underline"
+                                className="inline-flex items-center text-lg font-semibold text-slate-900 underline-offset-4 hover:underline"
                             >
-                                {ctaLabel}
+                                {ctaLabel} →
                             </Link>
                         </div>
-                    ) : null}
-                </div>
-            </Section>
+                    </div>
+                </Section>
+            ) : null}
         </div>
     );
 }

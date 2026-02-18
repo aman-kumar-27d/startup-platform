@@ -33,3 +33,8 @@ Render Web Service
 Render PostgreSQL
 
 Environment variables via Render dashboard
+
+
+npx prisma generate
+npx prisma migrate deploy
+npx prisma studio

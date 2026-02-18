@@ -46,7 +46,7 @@ export function PasswordDisplay({
               {password}
             </p>
             <p className="mt-2 text-xs text-amber-800">
-              Save this password now. It won't be shown again.
+              Save this password now. It won&apos;t be shown again.
             </p>
           </div>
         </div>
