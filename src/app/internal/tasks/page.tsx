@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type TaskStatus = "TODO" | "IN_PROGRESS" | "COMPLETED" | "OVERDUE";
 type TaskPriority = "LOW" | "MEDIUM" | "HIGH";
@@ -30,6 +30,14 @@ type Task = {
 type UserOption = {
   id: string;
   label: string;
+};
+
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+  role: string;
+  isActive: boolean;
 };
 
 type TaskFormState = {
@@ -102,36 +110,7 @@ export default function TasksPage() {
 
   const visibleTasks = useMemo(() => tasks, [tasks]);
 
-  useEffect(() => {
-    if (status !== "authenticated") return;
-    fetchTasks();
-  }, [status, filters, isAdmin]);
-
-  useEffect(() => {
-    if (!isAdmin || status !== "authenticated") return;
-    fetchEmployees();
-  }, [isAdmin, status]);
-
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch("/api/internal/users");
-      if (!res.ok) {
-        throw new Error("Failed to load employees");
-      }
-      const data = await res.json();
-      const options = (data.users as any[])
-        .filter((user) => user.role === "EMPLOYEE" && user.isActive)
-        .map((user) => ({
-          id: user.id,
-          label: user.name ? `${user.name} (${user.email})` : user.email,
-        }));
-      setEmployees(options);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -158,6 +137,35 @@ export default function TasksPage() {
     } finally {
       setLoading(false);
     }
+  }, [filters, isAdmin]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    fetchTasks();
+  }, [status, fetchTasks]);
+
+  useEffect(() => {
+    if (!isAdmin || status !== "authenticated") return;
+    fetchEmployees();
+  }, [isAdmin, status]);
+
+  const fetchEmployees = async () => {
+    try {
+      const res = await fetch("/api/internal/users");
+      if (!res.ok) {
+        throw new Error("Failed to load employees");
+      }
+      const data = await res.json();
+      const options = (data.users as User[])
+        .filter((user) => user.role === "EMPLOYEE" && user.isActive)
+        .map((user) => ({
+          id: user.id,
+          label: user.name ? `${user.name} (${user.email})` : user.email,
+        }));
+      setEmployees(options);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleCreateTask = async () => {
@@ -165,7 +173,16 @@ export default function TasksPage() {
       setSubmittingCreate(true);
       setError(null);
 
-      const payload: any = {
+      type CreateTaskPayload = {
+        title: string;
+        description: string;
+        priority: TaskPriority;
+        status: TaskStatus;
+        assignedToId: string;
+        dueDate?: string;
+      };
+
+      const payload: CreateTaskPayload = {
         title: createForm.title.trim(),
         description: createForm.description.trim(),
         priority: createForm.priority,
@@ -217,15 +234,23 @@ export default function TasksPage() {
       setSubmittingEdit(true);
       setError(null);
 
-      const payload: any = {
+      type EditTaskPayload = {
+        title: string;
+        description: string;
+        priority: TaskPriority;
+        status: TaskStatus;
+        assignedToId: string;
+        dueDate: string | null;
+      };
+
+      const payload: EditTaskPayload = {
         title: editForm.title.trim(),
         description: editForm.description.trim(),
         priority: editForm.priority,
         status: editForm.status,
         assignedToId: editForm.assignedToId,
+        dueDate: editForm.dueDate ? editForm.dueDate : null,
       };
-
-      payload.dueDate = editForm.dueDate ? editForm.dueDate : null;
 
       const res = await fetch(`/api/internal/tasks/${editingTask.id}`, {
         method: "PATCH",

@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { ChangePasswordForm } from "../../components/ChangePasswordForm";
 
 export default function SecuritySettingsPage() {
-  const [showSuccess, setShowSuccess] = useState(false);
-
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -29,10 +26,7 @@ export default function SecuritySettingsPage() {
 
         <ChangePasswordForm
           isForced={false}
-          onSuccess={() => {
-            setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 4000);
-          }}
+          onSuccess={() => { }}
         />
       </div>
 

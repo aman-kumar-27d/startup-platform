@@ -1,10 +1,5 @@
-const { PrismaClient } = require("@prisma/client") as {
-  PrismaClient: typeof import("@prisma/client").PrismaClient;
-};
-
-const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3") as {
-  PrismaBetterSqlite3: typeof import("@prisma/adapter-better-sqlite3").PrismaBetterSqlite3;
-};
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 const createPrismaClient = () =>
   new PrismaClient({

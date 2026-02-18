@@ -12,6 +12,11 @@ export async function generateMetadata(): Promise<Metadata> {
     return generatePageMetadata("ABOUT");
 }
 
+/**
+ * About page - Company story and value proposition
+ * Responsive design optimized for mobile, tablet, and desktop
+ * Uses Card components with responsive grid layout
+ */
 export default async function AboutPage() {
     const contentMap = await getContentByKeys([
         "ABOUT_HERO",
@@ -35,29 +40,33 @@ export default async function AboutPage() {
     const ctaBody = ctaBlock?.description;
 
     return (
-        <div className="bg-white">
-            {/* Hero Section */}
-            <Section className={`${warmGradientLight} py-20 sm:py-28 lg:py-32`}>
-                <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+        <div className="bg-white scroll-smooth">
+            {/* Hero Section - Page introduction with brand story */}
+            <Section className={`${warmGradientLight} py-16 sm:py-24 md:py-32`}>
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
                     <div className="max-w-3xl">
                         {heroTitle ? (
-                            <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 leading-tight">
                                 {heroTitle}
                             </h1>
                         ) : null}
                         {heroBody ? (
-                            <p className="mt-6 text-lg text-slate-600 leading-relaxed">{heroBody}</p>
+                            <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-lg text-slate-600 leading-relaxed">
+                                {heroBody}
+                            </p>
                         ) : null}
                     </div>
                 </div>
             </Section>
 
-            {/* Values Asymmetric Layout */}
+            {/* Values Grid - Asymmetric card layout with responsive columns */}
             {values.length > 0 && (
                 <Section className={cardSectionGradient}>
-                    <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+                        {/* Grid: 1 column mobile, 2 tablet, 3 desktop with auto-row spanning on lg */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-max">
                             {values.map((block, index) => {
+                                // First card spans wider on desktop for visual hierarchy
                                 const isWide = index === 0;
                                 const rowSpan = isWide ? "lg:row-span-2" : "";
                                 const colSpan = isWide ? "lg:col-span-2" : "";
@@ -67,19 +76,19 @@ export default async function AboutPage() {
                                         key={block.id}
                                         index={index}
                                         floating
-                                        className={`${rowSpan} ${colSpan} transition-all duration-500 ${isWide ? "p-8" : "p-6"
+                                        className={`${rowSpan} ${colSpan} transition-all duration-500 ${isWide ? "p-6 sm:p-8" : "p-5 sm:p-6"
                                             }`}
                                     >
                                         {block.title && (
                                             <h2
-                                                className={`font-semibold text-slate-900 ${isWide ? "text-xl" : "text-lg"
+                                                className={`font-semibold text-slate-900 ${isWide ? "text-lg sm:text-xl" : "text-base sm:text-lg"
                                                     }`}
                                             >
                                                 {block.title}
                                             </h2>
                                         )}
                                         {block.description && (
-                                            <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+                                            <p className="mt-2 sm:mt-3 text-sm text-slate-600 leading-relaxed">
                                                 {block.description}
                                             </p>
                                         )}
@@ -91,18 +100,20 @@ export default async function AboutPage() {
                 </Section>
             )}
 
-            {/* CTA Section */}
+            {/* CTA Section - Call to action for engagement */}
             {(ctaTitle || ctaBody) && (
                 <Section className={`border-t border-slate-100 ${warmGradientLight}`}>
-                    <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
                         <div className="max-w-3xl">
                             {ctaTitle ? (
-                                <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
                                     {ctaTitle}
                                 </h2>
                             ) : null}
                             {ctaBody ? (
-                                <p className="mt-6 text-lg text-slate-600 leading-relaxed">{ctaBody}</p>
+                                <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-600 leading-relaxed">
+                                    {ctaBody}
+                                </p>
                             ) : null}
                         </div>
                     </div>

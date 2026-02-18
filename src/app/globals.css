@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
+/* Reset and base styling */
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; 
+  overflow-x: hidden;
 }
+
+/* Theme variables for consistent color usage */
 @theme {
   --color-primary: #0df265;
   --color-background-light: #f5f8f7;
@@ -14,26 +17,35 @@ body {
   --primary-glow: #0df265;
   --glass-border: rgba(13, 242, 101, 0.2);
 }
+
+/* Base body styling with smooth scroll behavior */
 body {
   font-family: "Space Grotesk", sans-serif;
-  /* background-color: #050505; */
   scrollbar-width: thin;
   scrollbar-color: #0df265 #050505;
   perspective: 2000px;
+  scroll-behavior: smooth;
 }
+
+/* 3D perspective utilities */
 .three-d-scene {
   perspective: 1200px;
   transform-style: preserve-3d;
 }
+
 .depth-layer-1 {
   transform: translateZ(-100px) scale(1.1);
 }
+
 .depth-layer-2 {
   transform: translateZ(-50px) scale(1.05);
 }
+
 .depth-layer-3 {
   transform: translateZ(20px);
 }
+
+/* Glass morphism card effect - base styling */
 .glass-card {
   background: rgba(13, 242, 101, 0.03);
   backdrop-filter: blur(20px);
@@ -41,27 +53,40 @@ body {
   transform-style: preserve-3d;
   transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.glass-card:hover {
-  transform: rotateY(15deg) rotateX(10deg) translateZ(30px);
-  box-shadow:
-    -20px 20px 50px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(13, 242, 101, 0.1);
-  border-color: var(--primary-glow);
+
+/* Glass card hover effect - disabled on touch devices */
+@media (hover: hover) {
+  .glass-card:hover {
+    transform: rotateY(15deg) rotateX(10deg) translateZ(30px);
+    box-shadow:
+      -20px 20px 50px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(13, 242, 101, 0.1);
+    border-color: var(--primary-glow);
+  }
 }
+
+/* 3D flip card animation - removed on mobile for better touch experience */
 .flip-card-inner {
   transition: transform 0.8s;
   transform-style: preserve-3d;
 }
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
+
+@media (hover: hover) {
+  .flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+  }
 }
+
 .flip-card-front,
 .flip-card-back {
   backface-visibility: hidden;
 }
+
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+/* Energy pipe gradient effect */
 .energy-pipe {
   background: linear-gradient(180deg, transparent, #0df265, #0df265, transparent);
   box-shadow:
@@ -69,11 +94,15 @@ body {
     0 0 60px rgba(13, 242, 101, 0.4);
   filter: blur(1px);
 }
+
+/* Neon text glow effect */
 .neon-text-glow {
   text-shadow:
     0 0 15px rgba(13, 242, 101, 0.8),
     0 0 30px rgba(13, 242, 101, 0.4);
 }
+
+/* 3D grid background */
 .grid-3d {
   background-image:
     linear-gradient(to right, rgba(13, 242, 101, 0.1) 1px, transparent 1px),
@@ -82,6 +111,8 @@ body {
   transform: rotateX(60deg) translateZ(-200px);
   mask-image: radial-gradient(circle, black 30%, transparent 80%);
 }
+
+/* Grain overlay texture */
 .grain-overlay {
   position: fixed;
   top: 0;
@@ -93,37 +124,72 @@ body {
   opacity: 0.02;
   background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvhNZ22eiKvB1AH5xSKPKYWjBz2TCrMVycT7hNwJosBjDFCfnP8V1m2YYxoLtE7lp7Ckg6DOzv4B1cW4U8Y5TA9Gt_8t6LajuNBeqoJ9w2eNgP4STs47CdkOUiOVBGmDNYSEvif-JyhVeGBCHBlAVwahl7ala20-LbIgbtbZ7RezLTiYWzaju40P8ByIgOPilL8zKGZXt7zvUQ_yce3jtVvMp2_NxP3i3mgPKwBaEB_5YBPO2BfV6oOaoHuz4hFsqqqPfQupRXqBC4");
 }
+
+/* Parallax section styling */
 .parallax-section {
   transform-style: preserve-3d;
 }
+
+/* Floating icon animation */
 .floating-icon {
   transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.floating-icon:hover {
-  transform: rotateY(360deg) scale(1.2) translateZ(50px);
+
+@media (hover: hover) {
+  .floating-icon:hover {
+    transform: rotateY(360deg) scale(1.2) translateZ(50px);
+  }
 }
+
+/* Tailwind layer customizations for components */
 @layer base {
   body {
     @apply font-['Inter'] bg-white antialiased text-neutral-900;
   }
 }
+
 @layer components {
+  /* Enhanced glass card styling - responsive and touch-friendly */
   .glass-card {
     @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(255,165,0,0.08)] transition-all duration-500;
   }
-  .glass-card:hover {
-    @apply -translate-y-2 scale-[1.02] bg-white/90 shadow-[0_20px_48px_0_rgba(255,165,0,0.15)];
+
+  /* Glass card hover effect - only on non-touch devices */
+  @media (hover: hover) {
+    .glass-card:hover {
+      @apply -translate-y-2 scale-[1.02] bg-white/90 shadow-[0_20px_48px_0_rgba(255,165,0,0.15)];
+    }
   }
+
+  /* Active state for touch devices */
+  .glass-card:active {
+    @apply scale-[0.98];
+  }
+
+  /* Floating animations - reduced on mobile for performance */
   .antigravity-float-1 {
     animation: float 8s ease-in-out infinite;
   }
+
   .antigravity-float-2 {
     animation: float 10s ease-in-out infinite reverse;
   }
+
   .antigravity-float-3 {
     animation: float 12s ease-in-out infinite 1s;
   }
+
+  /* Reduce motion for accessibility and performance */
+  @media (prefers-reduced-motion: reduce) {
+    .antigravity-float-1,
+    .antigravity-float-2,
+    .antigravity-float-3 {
+      animation: none;
+    }
+  }
 }
+
+/* Float animation keyframes */
 @keyframes float {
   0%,
   100% {
@@ -133,6 +199,62 @@ body {
     transform: translateY(-20px);
   }
 }
+
+/* Light streak gradient effect */
 .light-streak {
   background: linear-gradient(45deg, transparent 0%, rgba(251, 191, 36, 0.2) 50%, transparent 100%);
+}
+
+/* Mobile and touch-friendly optimizations */
+@media (max-width: 640px) {
+  /* Reduce blur effects on smaller screens for better performance */
+  .glass-card {
+    backdrop-filter: blur(12px);
+  }
+
+  /* Increase touch target sizes on mobile */
+  button,
+  a[role="button"],
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Hide decorative elements on very small screens */
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+/* Tablet and larger optimizations */
+@media (min-width: 768px) {
+  /* Display hidden-mobile elements */
+  .hidden-mobile {
+    display: block;
+  }
+
+  /* Enhanced backdrop blur on larger screens */
+  .glass-card {
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* Smooth transitions and animations - respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High DPI screen optimizations */
+@media (min-device-pixel-ratio: 2) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
