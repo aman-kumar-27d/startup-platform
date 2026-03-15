@@ -1,11 +1,11 @@
 {
   "name": "startup-platform",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "npm run prisma:setup:dev && next dev",
     "prisma:setup:dev": "prisma generate --schema=./prisma/schema.prisma",
-    "build": "next build",
+    "build": "prisma generate --schema=./prisma/schema.prisma && next build",
     "start": "next start",
     "start:render": "prisma migrate deploy --schema=./prisma/schema.prisma && next start",
     "lint": "eslint"
