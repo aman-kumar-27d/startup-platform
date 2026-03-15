@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Store submission in database
-        await prisma.ContactSubmission.create({
+        await prisma.contactSubmission.create({
             data: {
                 name: name.trim(),
                 email: email.trim().toLowerCase(),

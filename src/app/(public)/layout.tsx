@@ -111,7 +111,7 @@ export default async function PublicLayout({
                         {/* Brand section - spans 2 columns on md+ */}
                         <div className="md:col-span-2">
                             <h4 className="text-white text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
-                                {siteName} Local
+                                {siteName} WEB DATACRUST
                             </h4>
                             {footerText ? (
                                 <p className="text-neutral-400 max-w-sm mb-6 sm:mb-8 text-sm sm:text-base leading-relaxed">
@@ -120,12 +120,17 @@ export default async function PublicLayout({
                             ) : null}
                             {/* Social links - responsive sizing */}
                             <div className="flex gap-3 sm:gap-4">
-                                <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white cursor-pointer transition-all duration-300 shrink-0">
+                                {/* <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white cursor-pointer transition-all duration-300 shrink-0">
                                     <span className="material-symbols-outlined text-lg sm:text-xl">share</span>
-                                </div>
-                                <div className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white cursor-pointer transition-all duration-300 shrink-0">
-                                    <span className="material-symbols-outlined text-lg sm:text-xl">hub</span>
-                                </div>
+                                </div> */}
+                                <a
+                                    className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white transition-all duration-300 shrink-0"
+                                    href="mailto:webdatacrust@gmail.com"
+                                    aria-label="Email us on Gmail"
+                                    title="web.datacrust@gmail.com"
+                                >
+                                    <span className="material-symbols-outlined text-lg sm:text-xl">Gmail</span>
+                                </a>
                             </div>
                         </div>
 
@@ -192,7 +197,7 @@ export default async function PublicLayout({
                     <div className="border-t border-neutral-800 pt-8 sm:pt-12">
                         {/* Large brand text - responsive sizing and mobile-optimized */}
                         <h2 className="text-6xl sm:text-9xl md:text-[12rem] lg:text-[20rem] font-black text-neutral-800/70 select-none leading-none tracking-tighter whitespace-nowrap text-center -mb-8 sm:-mb-12 md:-mb-20 overflow-hidden">
-                            BrandNAME
+                            WEB DATACRUST
                         </h2>
 
                         {/* Copyright and links - responsive layout */}
@@ -204,6 +209,17 @@ export default async function PublicLayout({
                                 </a>
                                 <a className="hover:text-white transition-colors duration-200 whitespace-nowrap" href="#">
                                     API Reference
+                                </a>
+                                <a
+                                    className="hover:text-white transition-colors duration-200 whitespace-nowrap inline-flex items-center gap-1"
+                                    href="mailto:web.datacrust@gmail.com"
+                                >
+                                    <span
+                                        className="material-symbols-outlined text-sm leading-none"
+                                        aria-hidden="true"
+                                    >
+                                    </span>
+                                    Gmail
                                 </a>
                                 <a className="hover:text-white transition-colors duration-200 whitespace-nowrap" href="#">
                                     Contact Sales

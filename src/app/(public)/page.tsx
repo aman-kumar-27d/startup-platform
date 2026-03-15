@@ -79,11 +79,11 @@ export default async function LandingPage() {
         <div className="bg-white scroll-smooth">
             {/* Hero Section - Main landing visual */}
             <Hero
-                title="Scale without"
-                highlightedText="Gravity's reach."
+                title="Build. Analyze."
+                highlightedText="Grow Faster."
                 subtitle={
                     heroSubtitle ||
-                    "A developer-first platform designed for high-impact deployments. Experience fluidity, speed, and immersive control."
+                    "WebDataCrust delivers custom websites, data analytics, and business intelligence solutions that help businesses grow faster and make smarter decisions."
                 }
                 primaryCtaText={heroCtaLabel || "Start Building Now"}
                 primaryCtaHref={heroCtaHref}
@@ -343,9 +343,9 @@ export default async function LandingPage() {
             </Section>
 
             {/* Impact Section - Showcase of major projects with statistics */}
-            <Section className="py-20 sm:py-32 md:py-40 px-4" id="impact">
+            {/* <Section className="py-20 sm:py-32 md:py-40 px-4" id="impact">
                 <div className="max-w-7xl mx-auto">
-                    {/* Section header with CTA */}
+                
                     <div className="flex flex-col md:flex-row items-end justify-between mb-12 sm:mb-16 md:mb-24 gap-6 sm:gap-8">
                         <div className="depth-layer-3">
                             <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6">Impact Realized</h2>
@@ -358,9 +358,10 @@ export default async function LandingPage() {
                         </a>
                     </div>
 
-                    {/* Featured projects grid - Mobile: stacked, Desktop: 2 columns */}
+                 
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-                        {/* First featured project - Fintech */}
+                   
                         <div className="group relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-accent-dark h-112.5 sm:h-125 md:h-150 cursor-pointer">
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
@@ -393,7 +394,7 @@ export default async function LandingPage() {
                             </div>
                         </div>
 
-                        {/* Second featured project - Enterprise AI */}
+                     
                         <div className="group relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-accent-dark h-112.5 sm:h-125 md:h-150 cursor-pointer">
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
@@ -426,8 +427,9 @@ export default async function LandingPage() {
                             </div>
                         </div>
                     </div>
+                    
                 </div>
-            </Section>
+            </Section> */}
 
             {/* CTA Section - Call-to-action for engagement */}
             <Section className="bg-linear-to-br from-amber-50 to-orange-50">
