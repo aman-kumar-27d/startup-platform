@@ -1,5 +1,3 @@
-import { Prisma } from "@prisma/client";
-
 import { prisma } from "@/lib/prisma";
 
 export type ContentBlockRecord = Record<string, unknown>;
@@ -21,9 +19,10 @@ export interface ContentBlock {
 
 export const getContentBlocks = async (): Promise<ContentBlockRecord[]> => {
     try {
-        return await prisma.$queryRaw<ContentBlockRecord[]>(
-            Prisma.sql`SELECT * FROM ContentBlock WHERE isPublished = 1`
-        );
+        return await prisma.contentBlock.findMany({
+            where: { isPublished: true },
+            orderBy: { order: "asc" },
+        });
     } catch {
         return [];
     }
@@ -77,19 +76,25 @@ export const getContentByKey = async (
 
 export const getServices = async (): Promise<ServiceRecord[]> => {
     try {
-        return await prisma.$queryRaw<ServiceRecord[]>(
-            Prisma.sql`SELECT * FROM Service WHERE isPublished = 1`
-        );
+        return await prisma.service.findMany({
+            where: { isPublished: true },
+            orderBy: { order: "asc" },
+        });
     } catch {
         return [];
     }
 };
 
-export const getPublicProjects = async () =>
-    prisma.project.findMany({
-        where: { isPublic: true },
-        orderBy: { updatedAt: "desc" },
-    });
+export const getPublicProjects = async () => {
+    try {
+        return await prisma.project.findMany({
+            where: { isPublic: true },
+            orderBy: { updatedAt: "desc" },
+        });
+    } catch {
+        return [];
+    }
+};
 
 const normalize = (value: unknown) =>
     typeof value === "string" ? value.trim().toLowerCase() : undefined;

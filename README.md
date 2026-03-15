@@ -1,40 +1,42 @@
-Frontend + Backend
+# Startup Platform
 
-Next.js (App Router)
+## Stack
 
-API Routes (built-in)
+- Next.js (App Router)
+- Prisma ORM
+- PostgreSQL
+- NextAuth.js (credentials)
+- Tailwind CSS
 
-Server Actions (later, optional)
+## Production Deployment on Render
 
-Database
+This repository now uses PostgreSQL in Prisma and is ready for Render.
 
-Render PostgreSQL
+### Option A: Blueprint (recommended)
 
-Prisma ORM
+1. Push this repo to GitHub.
+2. In Render, choose New > Blueprint.
+3. Select this repo.
+4. Render will use `render.yaml` to create:
+   - Web Service: `startup-platform`
+   - PostgreSQL: `startup-platform-db`
+5. Set `NEXTAUTH_URL` in Render to your public service URL.
 
-Auth
+### Option B: Manual service setup
 
-NextAuth.js
+- Build command: `npm ci && npx prisma migrate deploy --schema=./prisma/schema.prisma && npm run build`
+- Start command: `npm run start`
 
-Credentials-based login (email + password)
+Required environment variables:
 
-Role-based access control
+- `NODE_ENV=production`
+- `DATABASE_URL=<Render Postgres connection string>`
+- `NEXTAUTH_SECRET=<strong random secret>`
+- `NEXTAUTH_URL=https://your-service.onrender.com`
+- `ALLOW_ADMIN_SETUP=false`
 
-Styling
+## Prisma commands
 
-Tailwind CSS
-
-shadcn/ui (optional, highly recommended)
-
-Infra
-
-Render Web Service
-
-Render PostgreSQL
-
-Environment variables via Render dashboard
-
-
-npx prisma generate
-npx prisma migrate deploy
-npx prisma studio
+- Generate client: `npx prisma generate`
+- Apply migrations: `npx prisma migrate deploy --schema=./prisma/schema.prisma`
+- Open Studio: `npx prisma studio`
